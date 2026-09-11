@@ -126,18 +126,17 @@ export default function App() {
   return (
     <div className="app">
       <aside className="side">
+        <div className="brand"><span className="brand-mark">✦</span><span>mori</span></div>
         <button className="new" onClick={newSession}>
-          + 새 대화
+          <span>＋</span> 새 대화
         </button>
+        <p className="session-label">내 대화</p>
         <ul className="session-list">
           {sessions.map((s) => (
             <li key={s.id} className={s.id === sessionId ? "session on" : "session"}>
-              {console.log("edit", editId)}
-              {console.log("session", s.id)}
-
               {editId === s.id ? (
                 <span className="rename">
-                  <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+                  <input aria-label="대화 제목" autoFocus value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
                   <button onClick={() => saveTitle(s.id)}>저장</button>
                 </span>
               ) : (
@@ -146,30 +145,44 @@ export default function App() {
                     {s.title}
                   </button>
                   <span className="session-tools">
-                    <button onClick={() => startRename(s)}>수정</button>
-                    <button onClick={() => removeSession(s.id)}>삭제</button>
+                    <button aria-label={`${s.title} 제목 수정`} onClick={() => startRename(s)}>✎</button>
+                    <button aria-label={`${s.title} 삭제`} onClick={() => removeSession(s.id)}>×</button>
                   </span>
                 </>
               )}
             </li>
           ))}
         </ul>
+        <div className="side-footer">AI와 편안하게 대화해 보세요.</div>
       </aside>
 
       <main className="chat">
-        <div className="box">
+        <header className="chat-header">
+          <div><p className="eyebrow">AI COMPANION</p><h1>무엇을 도와드릴까요?</h1></div>
+          <span className="status"><i /> 온라인</span>
+        </header>
+        <div className="box" aria-live="polite">
+          {msgs.length === 0 && !loading && (
+            <section className="welcome">
+              <div className="bot-orb">✦</div>
+              <p className="welcome-kicker">READY WHEN YOU ARE</p>
+              <h2>가볍게, 무엇이든<br />물어보세요.</h2>
+              <p>아이디어를 정리하거나 궁금한 것을 함께 찾아볼 수 있어요.</p>
+            </section>
+          )}
           {msgs.map((msg) => (
             <div key={msg.id} className={msg.role}>
-              <p>{msg.text}</p>
+              <div className="message-meta">{msg.role === "user" ? "나" : "mori"}</div><p>{msg.text}</p>
             </div>
           ))}
-          {loading && <p className="loading">생각 중...</p>}
+          {loading && <p className="loading"><span /> 답변을 준비하고 있어요</p>}
         </div>
 
         <div className="input-row">
-          <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={onKey} placeholder="메시지를 입력하세요" />
-          <button onClick={send}>전송</button>
+          <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={onKey} placeholder="무엇이든 물어보세요" aria-label="메시지 입력" />
+          <button onClick={send} disabled={!input.trim() || loading} aria-label="메시지 전송">↑</button>
         </div>
+        <p className="input-hint">Enter를 눌러 전송</p>
       </main>
     </div>
   );
