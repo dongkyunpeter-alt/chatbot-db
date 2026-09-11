@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>챗봇 버그 보고서</title>
+  <style>
+    body { max-width: 760px; margin: 40px auto; padding: 0 20px; font-family: sans-serif; line-height: 1.7; color: #222; }
+    h1 { margin-bottom: 8px; }
+    .note { color: #555; }
+    li { margin: 18px 0; }
+    code { padding: 2px 5px; background: #f1f1f1; border-radius: 3px; }
+    .high { color: #b42318; font-weight: bold; }
+    .medium { color: #9a6700; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>챗봇 버그 보고서</h1>
+  <p class="note">확인일: 2026-09-10</p>
+  <p class="note">소스 파일은 수정하지 않았습니다.</p>
+
+  <ol>
+    <li>
+      <span class="high">높음</span>
+      <strong>대화 저장 API가 실패합니다.</strong>
+      <p><code>db.readmessage()</code> 함수가 없습니다. 실제 함수명은 <code>read_message()</code>입니다.</p>
+      <p><code>backend/main.py</code> 31번째 줄</p>
+    </li>
+    <li>
+      <span class="high">높음</span>
+      <strong>메시지 조회 API가 실패합니다.</strong>
+      <p><code>db.read_messages()</code> 함수가 없습니다. 실제 함수명은 <code>read_message()</code>입니다.</p>
+      <p><code>backend/main.py</code> 54번째 줄</p>
+    </li>
+    <li>
+      <span class="high">높음</span>
+      <strong>AI 대화 이력이 잘못 전달됩니다.</strong>
+      <p>DB에는 역할을 <code>당신</code>, <code>챗봇</code>으로 저장합니다.</p>
+      <p>하지만 이력 변환은 <code>user</code>만 사용자로 인식합니다.</p>
+      <p><code>backend/main.py</code> 34번째 줄, 61번째 줄</p>
+    </li>
+    <li>
+      <span class="medium">중간</span>
+      <strong>DB 쓰기에서 잠금 오류가 발생했습니다.</strong>
+      <p>실행 중 <code>sqlite3.OperationalError: database is locked</code>가 확인되었습니다.</p>
+      <p><code>chat.db-journal</code> 파일이 남아 있었습니다.</p>
+      <p>원인은 다른 프로세스 또는 이전 쓰기 작업으로 보입니다.</p>
+    </li>
+  </ol>
+
+  <h2>검증 제한</h2>
+  <p>현재 환경에 <code>fastapi</code>가 설치되지 않아 API 실행 검증은 진행하지 못했습니다.</p>
+</body>
+</html>
