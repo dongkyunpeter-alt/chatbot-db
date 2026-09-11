@@ -51,18 +51,23 @@ export default function App() {
     const loadInitialSession = async () => {
       const sessionRes = await fetch(`${API}/sessions`);
       const sessionData = await sessionRes.json();
-      const list = sessionData.sessions;
+      let list = sessionData.sessions;
+
+      // 첫 실행처럼 저장된 대화가 없을 때도, 바로 선택할 수 있는 세션을 만듭니다.
+      if (list.length === 0) {
+        const createRes = await fetch(`${API}/sessions`, { method: "POST" });
+        const newSessionData = await createRes.json();
+        list = [{ id: newSessionData.id, title: newSessionData.title }];
+      }
 
       setSessions(list);
 
-      if (list.length > 0) {
-        const firstSessionId = list[0].id;
-        const messageRes = await fetch(`${API}/sessions/${firstSessionId}/messages`);
-        const messageData = await messageRes.json();
+      const firstSessionId = list[0].id;
+      const messageRes = await fetch(`${API}/sessions/${firstSessionId}/messages`);
+      const messageData = await messageRes.json();
 
-        setSessionId(firstSessionId);
-        setMsgs(messageData.messages);
-      }
+      setSessionId(firstSessionId);
+      setMsgs(messageData.messages);
     };
 
     loadInitialSession();
