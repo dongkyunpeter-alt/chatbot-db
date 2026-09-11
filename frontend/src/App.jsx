@@ -126,7 +126,7 @@ export default function App() {
   return (
     <div className="app">
       <aside className="side">
-        <div className="brand"><span className="brand-mark">✦</span><span>mori</span></div>
+        <div className="brand"><span className="brand-mark">✦</span><span>mong</span></div>
         <button className="new" onClick={newSession}>
           <span>＋</span> 새 대화
         </button>
@@ -172,7 +172,7 @@ export default function App() {
           )}
           {msgs.map((msg) => (
             <div key={msg.id} className={msg.role}>
-              <div className="message-meta">{msg.role === "user" ? "나" : "mori"}</div><p>{msg.text}</p>
+              <div className="message-meta">{msg.role === "user" ? "나" : "mong"}</div><p>{msg.text}</p>
             </div>
           ))}
           {loading && <p className="loading"><span /> 답변을 준비하고 있어요</p>}
