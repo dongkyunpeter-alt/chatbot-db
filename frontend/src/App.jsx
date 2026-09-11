@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // const API = "https://chatbot-db-back.onrender.com";
 const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
@@ -6,6 +6,7 @@ const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 export default function App() {
   const [sessions, setSessions] = useState([]);
   const [sessionId, setSessionId] = useState(null);
+  const hasInitialized = useRef(false);
   const [editId, setEditId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
 
@@ -48,6 +49,10 @@ export default function App() {
   };
 
   useEffect(() => {
+    // 개발 모드의 Strict Mode가 effect를 다시 실행해도 초기 세션은 한 번만 만듭니다.
+    if (hasInitialized.current) return;
+    hasInitialized.current = true;
+
     const loadInitialSession = async () => {
       const sessionRes = await fetch(`${API}/sessions`);
       const sessionData = await sessionRes.json();
