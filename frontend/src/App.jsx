@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-// const API = "https://chatbot-db-back.onrender.com";
-const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+// 로컬 개발에서는 FastAPI를, 배포본에서는 이미 운영 중인 Render API를 사용합니다.
+const API =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV
+    ? "http://127.0.0.1:8000"
+    : "https://chatbot-db-back.onrender.com");
 
 export default function App() {
   const [sessions, setSessions] = useState([]);

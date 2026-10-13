@@ -1,5 +1,14 @@
 # chatbot-db
 
+## 공개 데모
+
+프런트엔드는 GitHub Pages로 자동 배포됩니다.
+
+- 데모: https://dongkyunpeter-alt.github.io/chatbot-db/
+- 백엔드 API 문서: https://chatbot-db-back.onrender.com/docs
+
+`main` 브랜치의 `frontend` 변경 사항이 GitHub Actions를 통해 자동으로 빌드·배포됩니다.
+
 FastAPI, React, SQLite로 만든 대화 세션 관리 챗봇입니다. AI 응답은 Hugging Face의 OpenAI 호환 Chat Completions API를 통해 생성합니다.
 
 ## 구성
