@@ -7,6 +7,33 @@ const API =
     ? "http://127.0.0.1:8000"
     : "https://chatbot-db-back.onrender.com");
 
+const CLIENT_ID_KEY = "mong-client-id";
+const createClientId = () =>
+  globalThis.crypto?.randomUUID?.() ||
+  `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+
+const getClientId = () => {
+  try {
+    const saved = localStorage.getItem(CLIENT_ID_KEY);
+    if (saved) return saved;
+    const created = createClientId();
+    localStorage.setItem(CLIENT_ID_KEY, created);
+    return created;
+  } catch {
+    return createClientId();
+  }
+};
+
+const CLIENT_ID = getClientId();
+const apiFetch = (url, options = {}) =>
+  fetch(url, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      "X-Client-ID": CLIENT_ID,
+    },
+  });
+
 export default function App() {
   const [sessions, setSessions] = useState([]);
   const [sessionId, setSessionId] = useState(null);
@@ -20,7 +47,7 @@ export default function App() {
 
   // 저장된 세션 목록을 불러옵니다.
   const loadSessions = async () => {
-    const res = await fetch(`${API}/sessions`);
+    const res = await apiFetch(`${API}/sessions`);
     const data = await res.json();
     setSessions(data.sessions);
     return data.sessions;
@@ -33,7 +60,7 @@ export default function App() {
       return;
     }
 
-    const res = await fetch(`${API}/sessions/${id}/messages`);
+    const res = await apiFetch(`${API}/sessions/${id}/messages`);
     const data = await res.json();
     setMsgs(data.messages);
   };
@@ -44,7 +71,7 @@ export default function App() {
   };
 
   const newSession = async () => {
-    const res = await fetch(`${API}/sessions`, { method: "POST" });
+    const res = await apiFetch(`${API}/sessions`, { method: "POST" });
     const data = await res.json();
 
     await loadSessions();
@@ -58,13 +85,13 @@ export default function App() {
     hasInitialized.current = true;
 
     const loadInitialSession = async () => {
-      const sessionRes = await fetch(`${API}/sessions`);
+      const sessionRes = await apiFetch(`${API}/sessions`);
       const sessionData = await sessionRes.json();
       let list = sessionData.sessions;
 
       // 첫 실행처럼 저장된 대화가 없을 때도, 바로 선택할 수 있는 세션을 만듭니다.
       if (list.length === 0) {
-        const createRes = await fetch(`${API}/sessions`, { method: "POST" });
+        const createRes = await apiFetch(`${API}/sessions`, { method: "POST" });
         const newSessionData = await createRes.json();
         list = [{ id: newSessionData.id, title: newSessionData.title }];
       }
@@ -88,7 +115,7 @@ export default function App() {
   };
   // 세션 타이틀 수정
   const saveTitle = async (id) => {
-    await fetch(`${API}/sessions/${id}`, {
+    await apiFetch(`${API}/sessions/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: editTitle }),
@@ -98,7 +125,7 @@ export default function App() {
   };
 
   const removeSession = async (id) => {
-    await fetch(`${API}/sessions/${id}`, { method: "DELETE" });
+    await apiFetch(`${API}/sessions/${id}`, { method: "DELETE" });
     const list = await loadSessions();
     const next = list.length > 0 ? list[0].id : null;
     setSessionId(next);
@@ -112,7 +139,7 @@ export default function App() {
     setInput("");
     setLoading(true);
 
-    await fetch(`${API}/sessions/${sessionId}/messages`, {
+    await apiFetch(`${API}/sessions/${sessionId}/messages`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
